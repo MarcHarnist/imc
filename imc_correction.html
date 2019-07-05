@@ -1,0 +1,102 @@
+<!Doctype html>
+<html>
+<title>Javascript</title>
+<meta charset="UTF-8">
+
+<script>
+
+	/**
+	*	Programme de calcul de l'IMC d'une personne
+	*   avec un code Javascript
+	*   Auteur: Marc Harnist
+	*   Lieu: ENI Niort
+	*   Date: 2019-07-05
+	**/
+
+	// Les variables globales
+	var poids = 0;
+	var taille = 0;
+	var imc = 0;
+</script>
+<body>
+
+	<h1>Calcul IMC</h1>
+
+	<p>Votre poids: <input type="text" id="poids" value="105"></p>
+	<p>Votre taille en cm: <input type="text" id="taille" value="180"></p>
+
+	<p><button onclick="calculer()">Calculer</button></p>
+
+	<h2>Résultat: <span id="resultat"></span></h2>
+	<h3><span id="message" style="color:green;"></span> <span id="resultat2" style="color:red;"></span></h3>
+
+	<script type="text/javascript">
+
+	var id1 = "poids";
+	var id2 = "taille";
+	var id3 = "resultat";
+	var id3bis = "resultat2";
+	var id4 = "message";
+	var message = "";
+	var bool = false;
+	
+	function calculer() {
+	
+		selector1 = document.getElementById(id1);
+		selector2 = document.getElementById(id2);
+		selector3 = document.getElementById(id3);
+		selector3bis = document.getElementById(id3bis);
+		selector4 = document.getElementById(id4);
+		poids  = selector1.value;
+		taille = selector2.value/100;
+		imc = poids/(taille*taille);
+
+		arrondi = Math.round(imc*10);
+		imc = arrondi/10;
+
+		/*
+		Indice de masse corporelle (IMC)	Interprétation (d'après l'OMS)
+		moins de 18,5	Insuffisance pondérale (maigreur)
+		18,5 à 25	Corpulence normale
+		25 à 30	Surpoids
+		30 à 35	Obésité modérée
+		35 à 40	Obésité sévère
+		plus de 40	Obésité morbide ou massive
+		*/
+		if(imc<18.5){
+			message = "Vous êtes en insuffisance pondérale";
+		}
+		else if(imc<25){
+			message = "Vous avez une corpulence normale";
+			bool = true;
+		}
+		else if(imc<30){
+			message = "Vous êtes en surpoids";
+		}
+		else if(imc<35){
+			message = "Vous êtes en obésité modérée";
+		}
+		else if(imc<40){
+			message = "Vous êtes en obésité sévère";
+		}
+		else if(imc>40){
+			message = "Vous êtes en obésité morbide ou massive";
+		}
+
+		//Affiche le résultat dans la page html
+		selector3.innerHTML = imc.toString().replace(".", ",");//remplace le point par une virgule
+		
+		if(bool == false){
+			selector3bis.innerHTML =  message;
+			selector4.innerHTML =  '';
+			bool=false;
+		}
+		else {
+			selector4.innerHTML =  message;
+			selector3bis.innerHTML =  '';
+			bool = false;
+		}
+	}
+</script>
+<body>
+<html>
