@@ -147,14 +147,17 @@
 			var pallierQuatre = meilleurPoids;
 		}
 
-/*				   + " et " + palierCinq + " kg."
-		message += "<br><br>Voici les palliers pour votre taille:<br>"
+		/*
+		Améliorer: afficher les étapes:
+		   message += "<br><br>Voici les palliers pour votre taille:<br>"
 		           + "Poids minimum: " + palierZero + "<br>";
 				   + corpulenceNormale + ": entre " + palierUn + " et " + palierDeux + " kg."
 				   + surpoids + ": entre " + palierDeux + " et " + pallierTrois + " kg."
 				   + obesiteModeree + ": entre " + pallierTrois + " et " + pallierQuatre + " kg."
 				   + obesiteSevere + ": entre " + pallierQuatre
+				   + " et " + palierCinq + " kg."
 				   + obesiteMorbideOuMassive + " au-dessus de " + palierSix + " kg.";*/ 
+				   
 		//Affiche le résultat dans la page html
 		selector3.innerHTML = imc.toString().replace(".", ",");//remplace le point par une virgule
 		selector4.innerHTML = message;
