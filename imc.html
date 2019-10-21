@@ -11,69 +11,110 @@
 	*   Auteur: Marc Harnist
 	*   Lieu: ENI Niort
 	*   Date: 2019-07-05
+	*   Mise à jour: 2019-10-21
 	**/
 
 	// Les variables globales
 	var poids = 0;
 	var taille = 0;
 	var imc = 0;
+		
+	/** 
+    *  Indice de masse corporelle (IMC)	Interprétation (d'après l'OMS)
+	*  moins de 18,5	Insuffisance pondérale (maigreur)
+	*  18,5 à 25	Corpulence normale
+	*  25 à 30	Surpoids
+	*  30 à 35	Obésité modérée
+	*  35 à 40	Obésité sévère
+	*  plus de 40	Obésité morbide ou massive */
+	var listImc = [18.5, 25 ,30 ,35 ,40];
 </script>
+
+<style>
+	input {width:30px;}
+	table {border-collapse: collapse; margin:0;}
+	td {border:1px solid blue; padding:5px; text-align:right;}
+	th {font-weight:bold;border:1px solid blue; padding:5px; }
+	.text-left {text-align:left;}
+	.text-center {text-align:center;}
+</style>
 <body>
 
 	<h1>Calcul IMC</h1>
 
-	<p>Votre poids: <input type="text" id="poids" value="98"></p>
-	<p>Votre taille en cm: <input type="text" id="taille" value="180"></p>
+	<p>Votre poids: <input type="text" id="poids" value="98"> Votre taille en cm: <input type="text" id="taille" value="180"> <button onclick="calculer()">Calculer</button></p>
+	
+	<p id="message"></p>
 
-	<p><button onclick="calculer()">Calculer</button></p>
+	<script>
 
-	<h2>Résultat: <span id="resultat"></span></h2>
-	<h3 id="message"></h3>
-
-	<script type="text/javascript">
-
+	var poids = 0;
+	var taille = 0;
+	
 	var id1 = "poids";
 	var id2 = "taille";
-	var id3 = "resultat";
-	var id4 = "message";
+	var id3 = "message";
+	
 	var message = "";
+	var tableauDesPoids = "";
+	var bilan = "";
+
+	//paliers 
+	var insuffisancePonderale = "\"insuffisance pondérale\"";
+	var corpulenceNormale = "\"corpulence normale\"";
+	var surpoids = "\"surpoids\"";
+	var obesiteModeree = "\"obésité modérée\"";
+	var obesiteSevere = "\"obésité sévère\"";
+	var obesiteMorbideOuMassive = "\"obésité morbide ou massive\"";
+	
+	// remplace le point américain par une virgule française dans les floats
+	function virgule(n){
+		return n.toString().replace(".", ",");
+	}
 	
 	function calculer() {
-	
-		var insuffisancePonderale = "\"insuffisance pondérale\"";
-		var corpulenceNormale = "\"corpulence normale\"";
-		var surpoids = "\"surpoids\"";
-		var obesiteModeree = "\"obésité modérée\"";
-		var obesiteSevere = "\"obésité sévère\"";
-		var obesiteMorbideOuMassive = "\"obésité morbide ou massive\"";
+		//reset
+		poids = taille = tableauDesPoids = 0;
 		
-	
+		// les ids
 		selector1 = document.getElementById(id1);
 		selector2 = document.getElementById(id2);
 		selector3 = document.getElementById(id3);
-		selector4 = document.getElementById(id4);
+		
+		//récupère le poids et la taille
 		poids  = selector1.value;
 		taille = selector2.value/100;
+		
+		//calcule imc
 		imc = poids/(taille*taille);
-		imcBrut = imc;
 		arrondi = Math.round(imc*10);
 		imc = arrondi/10;
+			
+		//calcul le poids à partir de l'imc et de la taille
+		function calculPoids(palier){
+			return Math.round(listImc[palier]*taille*taille);
+		}	
+		
+		function tableauPaliers(){
+			/* Améliorer: afficher les étapes: */ 	
+		   tableauDesPoids += "<h3>Les différents palliers pour votre taille</h3>"
+		   + "<table>"
+			   + "<tr><th>Nom du palier</th><th colspan=\"2\">Poids pour " + taille*100 +"cm</th></tr>"
+			   + "<tr><td class=\"text-left\">"+insuffisancePonderale+"</td><td colspan=\"2\" class=\"text-center\"> < " + calculPoids(0) + "</td></tr>"
+			   + "<tr><td class=\"text-left\">"+corpulenceNormale+"</td><td>"+calculPoids(0)+"</td><td>"+calculPoids(1)+"</td></tr>"
+			   + "<tr><td class=\"text-left\">"+surpoids+"</td><td>"+calculPoids(1)+"</td><td>"+calculPoids(2)+"</td></tr>"
+			   + "<tr><td class=\"text-left\">"+obesiteModeree+"</td><td>"+calculPoids(2)+"</td><td>"+calculPoids(3)+"</td></tr>"
+			   + "<tr><td class=\"text-left\">"+obesiteSevere+"</td><td>"+calculPoids(3)+"</td><td>"+calculPoids(4)+"</td></tr>"
+			   + "<tr><td class=\"text-left\">"+obesiteMorbideOuMassive+"</td><td colspan=\"2\" class=\"text-center\"> > "+calculPoids(4)+"</td></tr>"
+		   + "</table>";
+		}
 
-		/*
-		Indice de masse corporelle (IMC)	Interprétation (d'après l'OMS)
-		moins de 18,5	Insuffisance pondérale (maigreur)
-		18,5 à 25	Corpulence normale
-		25 à 30	Surpoids
-		30 à 35	Obésité modérée
-		35 à 40	Obésité sévère
-		plus de 40	Obésité morbide ou massive
-		*/
-		if(imc<18.5){
+		if(imc<listImc[0]){
 			message = "";
 		
 			//Calcul de la différence avec la catégorie en-dessous
-			var bonImc = 18.5;
-			var ecart = bonImc-imcBrut;
+			var bonImc = listImc[0];
+			var ecart = bonImc-imc;
 			var meilleurPoids = Math.round(bonImc*taille*taille);
 			var prochaineCategorie = "corpulence normale";
 			message = "Vous êtes en " + insuffisancePonderale +  ".<br>"
@@ -81,16 +122,15 @@
 			           + "Il vous faut pour cela prendre " + Math.round(meilleurPoids-poids) + " kg "
 					   + " pour changer de catégorie et entrer dans la catégorie \"" 
 					   + prochaineCategorie + "\".";
-			var palierZero = meilleurPoids;
 		}
-		else if(imc>=18.5 && imc<=25){
+		else if(imc>=listImc[0] && imc<=listImc[1]){
 			message = "Vous avez une " + corpulenceNormale + ". Ne changez rien !";
 		}
-		else if(imc>25 && imc<=30){
+		else if(imc>listImc[1] && imc<=listImc[2]){
 			message = "";
 			//Calcul de la différence avec la catégorie en-dessous
-			var bonImc = 25;
-			var ecart = imcBrut-bonImc;
+			var bonImc = listImc[1];
+			var ecart = imc-bonImc;
 			var meilleurPoids = bonImc*taille*taille;
 			var prochaineCategorie = corpulenceNormale;
 			console.log(arrondi);
@@ -101,12 +141,12 @@
 					   + prochaineCategorie + ".";
 			var palierUn = Math.round(meilleurPoids);
 		}
-		else if(imc>30 && imc<=35){
-			message = "Vous êtes en " + obesiteModeree;
+		else if(imc>listImc[2] && imc<=listImc[3]){
+			message = "Vous êtes en " + obesiteModeree + ".";
 			
 			//Calcul de la différence avec la catégorie en-dessous
-			var bonImc = 30;
-			var ecart = imcBrut-bonImc;
+			var bonImc = listImc[2];
+			var ecart = imc-bonImc;
 			var meilleurPoids = bonImc*taille*taille;
 			var prochaineCategorie = surpoids;
 			console.log(arrondi);
@@ -114,54 +154,40 @@
 			           + "Il vous faut donc perdre " + Math.round(poids - meilleurPoids) + " kg "
 					   + " pour changer de catégorie et entrer dans la catégorie " 
 					   + prochaineCategorie + ".";
-			var palierDeux = meilleurPoids;
 		}
-		else if(imc>35 && imc<=40){
-			message = "Vous êtes en " + obesiteSevere;
+		else if(imc>listImc[3] && imc<=listImc[4]){
+			message = "Vous êtes en " + obesiteSevere + ".";
 		
 			//Calcul de la différence avec la catégorie en-dessous
-			var bonImc = 35;
-			var ecart = imcBrut-bonImc;
+			var bonImc = listImc[3];
+			var ecart = imc-bonImc;
 			var meilleurPoids = bonImc*taille*taille;
-			var prochaineCategorie = surpoids;
+			var prochaineCategorie = obesiteModeree;
 			console.log(arrondi);
 			message += "<br>Prochaine étape: atteindre " + meilleurPoids + " kg.<br>"
 			           + "Il vous faut donc perdre " + Math.round(poids - meilleurPoids) + " kg "
 					   + " pour changer de catégorie et entrer dans la catégorie " 
 					   + prochaineCategorie + ".";
-			var pallierTrois = meilleurPoids;
 		}
-		else if(imc>40){
-			message = "Vous êtes en " + obesiteMorbideOuMassive;
+		else if(imc>listImc[4]){
+			message = "Vous êtes en " + obesiteMorbideOuMassive + ".";
 		
 			//Calcul de la différence avec la catégorie en-dessous
-			var bonImc = 40;
-			var ecart = imcBrut-bonImc;
+			var bonImc = listImc[4];
+			var ecart = imc-bonImc;
 			var meilleurPoids = bonImc*taille*taille;
-			var prochaineCategorie = "surpoids";
-			console.log(arrondi);
-			message += "<br>Prochaine étape: atteindre " + meilleurPoids + " kg.<br>"
+			var prochaineCategorie = obesiteSevere;
+			    message += "<br>Prochaine étape: atteindre " + meilleurPoids + " kg.<br>"
 			           + "Il vous faut donc perdre " + Math.round(poids - meilleurPoids) + " kg "
 					   + " pour changer de catégorie et entrer dans la catégorie " 
 					   + prochaineCategorie + ".";
-			var pallierQuatre = meilleurPoids;
 		}
 
-		/*
-		Améliorer: afficher les étapes:
-		   message += "<br><br>Voici les palliers pour votre taille:<br>"
-		           + "Poids minimum: " + palierZero + "<br>";
-				   + corpulenceNormale + ": entre " + palierUn + " et " + palierDeux + " kg."
-				   + surpoids + ": entre " + palierDeux + " et " + pallierTrois + " kg."
-				   + obesiteModeree + ": entre " + pallierTrois + " et " + pallierQuatre + " kg."
-				   + obesiteSevere + ": entre " + pallierQuatre
-				   + " et " + palierCinq + " kg."
-				   + obesiteMorbideOuMassive + " au-dessus de " + palierSix + " kg.";*/ 
-				   
-		//Affiche le résultat dans la page html
-		selector3.innerHTML = imc.toString().replace(".", ",");//remplace le point par une virgule
-		selector4.innerHTML = message;
+		//prepare le tableau des poids, des paliers, des étapes
+		tableauPaliers();
 		
+		//Affiche le résultat dans la page html
+		selector3.innerHTML = "Votre poids: " + poids + " kg, votre taille: " + (taille*100) + " cm, <strong>votre IMC: " + virgule(imc) + "</strong><br>" + message + "<br><br>" + tableauDesPoids + "<br><br>" 
 	}
 </script>
 <body>
